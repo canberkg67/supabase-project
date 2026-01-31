@@ -1,0 +1,1 @@
+[![Netlify Status](https://api.netlify.com/api/v1/badges/072ba2cb-d429-4689-9a55-b862a8f5ed00/deploy-status)](https://app.netlify.com/projects/ticket-supabase/deploys)
