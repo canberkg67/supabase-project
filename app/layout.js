@@ -1,4 +1,5 @@
 import './globals.css'
+import { SiteLogo } from '@/components/Sitelogo'
 
 export const metadata = {
   title: 'Ticket Supabase',
@@ -11,9 +12,9 @@ export default function RootLayout({ children }) {
       <body className="min-h-screen flex flex-col">
         <header className="border-b p-4">
           <nav className="max-w-5xl mx-auto flex justify-between">
-            <span className="font-semibold">Demo</span>
+            <SiteLogo />
             <span className="text-sm text-muted-foreground">
-              Ticket Sistemi
+              Nextjs+Supabase
             </span>
           </nav>
         </header>
