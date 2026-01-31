@@ -16,7 +16,7 @@ export default function AuthCallback() {
         return
       }
 
-      // Session başarılı → anasayfaya dön
+      
       router.replace('/')
     }
 
