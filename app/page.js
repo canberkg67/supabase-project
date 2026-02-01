@@ -2,6 +2,8 @@
 
 import { supabase } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
+import { LogIn } from "lucide-react"
+import Image from 'next/image'
 
 export default function Home() {
   const signInWithGoogle = async () => {
