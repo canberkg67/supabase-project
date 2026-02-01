@@ -46,7 +46,7 @@ export default function Home() {
         {/* RESİM */}
         <div className="relative w-full h-[320px]">
           <Image
-            src="../public/ticket-answer.avif"
+            src="/ticket-answer.avif"
             alt="Bir Ofis Destek Masası"
             fill
             className="object-cover"
