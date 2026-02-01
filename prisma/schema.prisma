@@ -19,6 +19,7 @@ model User {
   role      Role     @default(USER)
   profile   Profile?
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Profile {
@@ -27,6 +28,7 @@ model Profile {
   fullName  String?
   avatarUrl String?
   user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
 }
 
 enum Role {
