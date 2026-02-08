@@ -1,4 +1,6 @@
-function AdminSwitch() {
+import { useState } from 'react'
+
+export default function AdminSwitch() {
   const [enabled, setEnabled] = useState(false)
 
   return (
