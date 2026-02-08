@@ -1,9 +1,20 @@
 'use server'
 
+import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
 
-export async function syncUser(user) {
-  if (!user?.id || !user?.email) return null
+export async function syncUser() {
+  const supabase = createSupabaseServerClient()
+
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser()
+
+  if (error || !user || !user.email) {
+    console.log('❌ syncUser: user yok', error)
+    return null
+  }
 
   return prisma.user.upsert({
     where: { id: user.id },
@@ -14,10 +25,10 @@ export async function syncUser(user) {
       profile: {
         create: {
           fullName:
-            user.metadata?.full_name ||
-            user.metadata?.name ||
+            user.user_metadata?.full_name ||
+            user.user_metadata?.name ||
             null,
-          avatarUrl: user.metadata?.avatar_url || null,
+          avatarUrl: user.user_metadata?.avatar_url || null,
         },
       },
     },
@@ -28,17 +39,17 @@ export async function syncUser(user) {
           where: { userId: user.id },
           create: {
             fullName:
-              user.metadata?.full_name ||
-              user.metadata?.name ||
+              user.user_metadata?.full_name ||
+              user.user_metadata?.name ||
               null,
-            avatarUrl: user.metadata?.avatar_url || null,
+            avatarUrl: user.user_metadata?.avatar_url || null,
           },
           update: {
             fullName:
-              user.metadata?.full_name ||
-              user.metadata?.name ||
+              user.user_metadata?.full_name ||
+              user.user_metadata?.name ||
               null,
-            avatarUrl: user.metadata?.avatar_url || null,
+            avatarUrl: user.user_metadata?.avatar_url || null,
           },
         },
       },
