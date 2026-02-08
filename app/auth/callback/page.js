@@ -11,38 +11,24 @@ export default function AuthCallbackPage() {
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        // Get the hash with tokens
-        const hash = window.location.hash
+        console.log('🔄 Processing OAuth callback...')
 
-        if (!hash) {
-          console.log('❌ No hash found in URL')
+        // Get the session (Supabase SDK already exchanged the code)
+        const { data: { session }, error } = await supabase.auth.getSession()
+
+        if (error) {
+          console.error('❌ Session error:', error)
           router.push('/')
           return
         }
 
-        console.log('🔄 Processing OAuth callback...')
-
-        // Exchange the hash for a session
-        const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(hash)
-
-        if (exchangeError) {
-          console.error('❌ Exchange error:', exchangeError)
-          router.push('/?error=exchange_failed')
+        if (!session?.user) {
+          console.log('❌ No user in session')
+          router.push('/')
           return
         }
 
-        // Get the user from session
-        const {
-          data: { user },
-          error: userError,
-        } = await supabase.auth.getUser()
-
-        if (userError || !user) {
-          console.error('❌ User error:', userError)
-          router.push('/?error=user_failed')
-          return
-        }
-
+        const user = session.user
         console.log('👤 User:', user.id, user.email)
 
         // Sync to database
@@ -52,11 +38,11 @@ export default function AuthCallbackPage() {
           metadata: user.user_metadata,
         })
 
-        console.log('✅ Sync result:', syncResult)
+        console.log('✅ User synced to database:', syncResult?.id)
         router.push('/')
       } catch (err) {
         console.error('❌ Callback error:', err)
-        router.push('/?error=unknown')
+        router.push('/')
       }
     }
 
