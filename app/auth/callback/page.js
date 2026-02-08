@@ -11,6 +11,17 @@ export default function AuthCallbackPage() {
   useEffect(() => {
     const run = async () => {
       try {
+        // First, exchange the code for a session
+        const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(location.hash)
+        console.log('🔄 Exchange result:', data, exchangeError)
+
+        if (exchangeError) {
+          console.error('❌ Exchange error:', exchangeError)
+          router.replace('/')
+          return
+        }
+
+        // Now get the session
         const { data: sessionData, error } =
           await supabase.auth.getSession()
 
