@@ -12,7 +12,7 @@ export default function AuthCallbackPage() {
     const handleCallback = async () => {
       try {
         console.log('🔄 Processing OAuth callback...')
-
+        
         const { data: { session }, error } =
           await supabase.auth.getSession()
 
