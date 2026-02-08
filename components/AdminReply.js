@@ -1,4 +1,4 @@
-function AdminReply({ ticketId }) {
+export default function AdminReply({ ticketId }) {
   const [reply, setReply] = useState('')
 
   const sendReply = async () => {

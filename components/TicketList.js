@@ -1,4 +1,4 @@
-function TicketList({ isAdmin }) {
+export default function TicketList({ isAdmin }) {
   const [tickets, setTickets] = useState([])
 
   useEffect(() => {
