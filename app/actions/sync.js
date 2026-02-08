@@ -9,6 +9,7 @@ export async function syncUser(userData) {
   }
 
   try {
+    console.log('🔄 syncUser: attempting to sync user', userData.id)
     const result = await prisma.user.upsert({
       where: { id: userData.id },
       create: {
@@ -48,10 +49,10 @@ export async function syncUser(userData) {
         },
       },
     })
-    console.log('✅ syncUser: user saved', userData.id)
+    console.log('✅ syncUser: user saved successfully', userData.id, result)
     return result
   } catch (error) {
-    console.error('❌ syncUser: database error', error)
-    return null
+    console.error('❌ syncUser: database error', error.message, error.code)
+    throw error
   }
 }

@@ -10,28 +10,35 @@ export default function AuthCallbackPage() {
 
   useEffect(() => {
     const run = async () => {
-      
-      const { data: sessionData, error } =
-        await supabase.auth.getSession()
+      try {
+        const { data: sessionData, error } =
+          await supabase.auth.getSession()
 
-      if (error) {
-        console.error('Session error:', error)
+        if (error) {
+          console.error('❌ Session error:', error)
+          router.replace('/')
+          return
+        }
+
+        const user = sessionData?.session?.user
+        console.log('👤 User from session:', user?.id, user?.email)
+
+        if (user) {
+          const syncResult = await syncUser({
+            id: user.id,
+            email: user.email,
+            metadata: user.user_metadata,
+          })
+          console.log('✅ Sync result:', syncResult)
+        } else {
+          console.log('❌ No user found in session')
+        }
+
         router.replace('/')
-        return
+      } catch (err) {
+        console.error('❌ Callback error:', err)
+        router.replace('/')
       }
-
-      const user = sessionData?.session?.user
-
-      if (user) {
-        await syncUser({
-          id: user.id,
-          email: user.email,
-          metadata: user.user_metadata,
-        })
-      }
-
-      
-      router.replace('/')
     }
 
     run()
