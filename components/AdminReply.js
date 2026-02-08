@@ -1,3 +1,7 @@
+import { useState } from 'react'
+import { supabase } from '@/lib/supabase/client'
+import { Button } from '@/components/ui/button'
+
 export default function AdminReply({ ticketId }) {
   const [reply, setReply] = useState('')
 

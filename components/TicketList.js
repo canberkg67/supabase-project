@@ -1,3 +1,7 @@
+import { useEffect, useState } from 'react'
+import { supabase } from '@/lib/supabase/client'
+import AdminReply from './AdminReply'
+
 export default function TicketList({ isAdmin }) {
   const [tickets, setTickets] = useState([])
 
