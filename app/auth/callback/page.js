@@ -1,59 +1,101 @@
-'use client'
+'use server'
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase/client'
-import { syncUser } from '@/app/actions/sync'
+import { cookies } from 'next/headers'
+import { createServerClient } from '@supabase/ssr'
+import { redirect } from 'next/navigation'
+import { prisma } from '@/lib/prisma'
 
-export default function AuthCallbackPage() {
-  const router = useRouter()
-
-  useEffect(() => {
-    const run = async () => {
-      try {
-        // First, exchange the code for a session
-        const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(location.hash)
-        console.log('🔄 Exchange result:', data, exchangeError)
-
-        if (exchangeError) {
-          console.error('❌ Exchange error:', exchangeError)
-          router.replace('/')
-          return
-        }
-
-        // Now get the session
-        const { data: sessionData, error } =
-          await supabase.auth.getSession()
-
-        if (error) {
-          console.error('❌ Session error:', error)
-          router.replace('/')
-          return
-        }
-
-        const user = sessionData?.session?.user
-        console.log('👤 User from session:', user?.id, user?.email)
-
-        if (user) {
-          const syncResult = await syncUser({
-            id: user.id,
-            email: user.email,
-            metadata: user.user_metadata,
+export default async function AuthCallbackPage({ searchParams }) {
+  const cookieStore = await cookies()
+  
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll()
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set(name, value, options)
           })
-          console.log('✅ Sync result:', syncResult)
-        } else {
-          console.log('❌ No user found in session')
-        }
+        },
+      },
+    }
+  )
 
-        router.replace('/')
-      } catch (err) {
-        console.error('❌ Callback error:', err)
-        router.replace('/')
-      }
+  const code = searchParams?.code
+
+  if (code) {
+    console.log('🔄 Exchanging code for session...')
+    const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
+    
+    if (exchangeError) {
+      console.error('❌ Exchange error:', exchangeError)
+      redirect('/?error=auth_failed')
     }
 
-    run()
-  }, [router])
+    // Get the user and sync to database
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser()
 
-  return <p>Giriş yapılıyor...</p>
+    if (userError || !user) {
+      console.error('❌ User fetch error:', userError)
+      redirect('/?error=user_fetch_failed')
+    }
+
+    console.log('👤 User:', user.id, user.email)
+
+    // Sync user to database
+    try {
+      const syncResult = await prisma.user.upsert({
+        where: { id: user.id },
+        create: {
+          id: user.id,
+          email: user.email,
+          role: 'USER',
+          profile: {
+            create: {
+              fullName:
+                user.user_metadata?.full_name ||
+                user.user_metadata?.name ||
+                null,
+              avatarUrl: user.user_metadata?.avatar_url || null,
+            },
+          },
+        },
+        update: {
+          email: user.email,
+          profile: {
+            upsert: {
+              where: { userId: user.id },
+              create: {
+                fullName:
+                  user.user_metadata?.full_name ||
+                  user.user_metadata?.name ||
+                  null,
+                avatarUrl: user.user_metadata?.avatar_url || null,
+              },
+              update: {
+                fullName:
+                  user.user_metadata?.full_name ||
+                  user.user_metadata?.name ||
+                  null,
+                avatarUrl: user.user_metadata?.avatar_url || null,
+              },
+            },
+          },
+        },
+      })
+      console.log('✅ User synced:', user.id)
+    } catch (dbError) {
+      console.error('❌ Database error:', dbError)
+      redirect('/?error=db_sync_failed')
+    }
+  }
+
+  redirect('/')
 }
