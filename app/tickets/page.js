@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import AdminSwitch from '@/components/AdminSwitch'
+import TicketForm from '@/components/TicketForm'
+import TicketList from '@/components/TicketList'
 
 export default function TicketsPage() {
   const router = useRouter()
