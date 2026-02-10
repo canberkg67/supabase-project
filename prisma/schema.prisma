@@ -21,6 +21,8 @@ model User {
   profile   Profile?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  tickets   Ticket[]
+  replies   Reply[]
 }
 
 model Profile {
@@ -35,4 +37,31 @@ model Profile {
 enum Role {
   USER
   ADMIN
+}
+
+model Ticket {
+  id        String   @id @default(uuid())
+  title     String
+  message   String
+  status    TicketStatus @default(OPEN)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  replies   Reply[]
+  createdAt DateTime @default(now())
+}
+
+model Reply {
+  id        String   @id @default(uuid())
+  message   String
+  ticketId String
+  ticket   Ticket   @relation(fields: [ticketId], references: [id])
+  authorId String
+  author   User     @relation(fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+enum TicketStatus {
+  OPEN
+  ANSWERED
+  CLOSED
 }

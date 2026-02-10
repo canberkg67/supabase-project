@@ -10,4 +10,6 @@
  */
 export type * from './models/User.ts'
 export type * from './models/Profile.ts'
+export type * from './models/Ticket.ts'
+export type * from './models/Reply.ts'
 export type * from './commonInputTypes.ts'
