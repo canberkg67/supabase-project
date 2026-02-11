@@ -38,6 +38,6 @@ export async function middleware(request) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|public|.*\\.png|.*\\.jpg).*)',
+    '/((?!_next/static|_next/image|favicon.ico|public|auth/callback).*)',
   ],
 }
