@@ -10,7 +10,7 @@ export default function AuthCallback() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        // hash den session bilgilerini al
+        // Get the session from cookies (PKCE flow)
         const { data, error } = await supabase.auth.getSession()
 
         if (error || !data?.session) {
@@ -19,8 +19,26 @@ export default function AuthCallback() {
           return
         }
 
-        //session bilgileri alındıktan sonra kullanıcıyı ticket paneline yönlendir
-        console.log('Session established:', data.session.user.id)
+        const user = data.session.user
+
+        // Sync user to database
+        console.log('Syncing user to database:', user.id)
+        const response = await fetch('/api/auth/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: user.id,
+            email: user.email,
+            metadata: user.user_metadata,
+          }),
+        })
+
+        if (!response.ok) {
+          throw new Error('Failed to sync user')
+        }
+
+        // Redirect to tickets after successful sync
+        console.log('Session established and user synced:', user.id)
         router.push('/tickets')
       } catch (err) {
         console.error('Callback error:', err)
@@ -28,7 +46,6 @@ export default function AuthCallback() {
       }
     }
 
-    
     handleAuthCallback()
   }, [router])
 
