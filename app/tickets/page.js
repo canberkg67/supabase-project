@@ -1,48 +1,37 @@
-'use client'
+import { redirect } from 'next/navigation'
+import { prisma } from '@/lib/prisma'
+import { createSupabaseServerClient } from '@/lib/supabase/server'
 
-import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import AdminSwitch from '@/components/AdminSwitch'
 import TicketForm from '@/components/TicketForm'
 import TicketList from '@/components/TicketList'
+import AdminSwitch from '@/components/AdminSwitch'
+import LogoutButton from '@/components/LogoutButton'
 
-export default function TicketsPage() {
-  const router = useRouter()
-  const [user, setUser] = useState(null)
-  const [isAdmin, setIsAdmin] = useState(false)
+export default async function TicketsPage() {
+  const supabase = createSupabaseServerClient()
 
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) {
-        router.replace('/')
-      } else {
-        setUser(data.user)
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
-        // Basit admin kontrolü
-        if (data.user.email === 'canberk.girgin67@gmail.com') {
-          setIsAdmin(true)
-        }
-      }
-    })
-  }, [router])
-
-  const logout = async () => {
-    await supabase.auth.signOut()
-    router.replace('/')
+  // Giriş Yapılmamışsa ana sayfaya yönlendir
+  if (!user) {
+    redirect('/')
   }
 
-  if (!user) return <p>Yükleniyor...</p>
+  // Kullanıcının rolünü veritabanından kontrol et
+  const dbUser = await prisma.user.findUnique({
+    where: { id: user.id },
+    select: { role: true },
+  })
+
+  const isAdmin = dbUser?.role === 'ADMIN'
 
   return (
     <div className="max-w-3xl mx-auto py-10">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Ticket Paneli</h1>
-
-        <Button variant="outline" onClick={logout}>
-          Çıkış Yap
-        </Button>
+        <LogoutButton />
       </div>
 
       {isAdmin && <AdminSwitch />}
