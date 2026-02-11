@@ -12,7 +12,7 @@ export default function TicketForm() {
       data: { user },
     } = await supabase.auth.getUser()
 
-    await supabase.from('tickets').insert({
+    await supabase.from('Ticket').insert({
       userId: user.id,
       title,
       message,

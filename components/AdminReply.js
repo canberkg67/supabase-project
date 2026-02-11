@@ -12,7 +12,7 @@ export default function AdminReply({ ticketId }) {
       data: { user },
     } = await supabase.auth.getUser()
 
-    await supabase.from('replies').insert({
+    await supabase.from('Reply').insert({
       ticketId,
       message: reply,
       authorId: user?.id,

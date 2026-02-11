@@ -13,7 +13,7 @@ export default function TicketList({ isAdmin }) {
         data: { user },
       } = await supabase.auth.getUser()
 
-      let query = supabase.from('tickets').select('*')
+      let query = supabase.from('Ticket').select('*')
 
       if (!isAdmin) {
         query = query.eq('userId', user.id)
