@@ -8,9 +8,14 @@ export default function AdminReply({ ticketId }) {
   const [reply, setReply] = useState('')
 
   const sendReply = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
     await supabase.from('replies').insert({
-      ticket_id: ticketId,
+      ticketId,
       message: reply,
+      authorId: user?.id,
     })
     setReply('')
   }

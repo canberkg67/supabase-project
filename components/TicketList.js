@@ -16,10 +16,10 @@ export default function TicketList({ isAdmin }) {
       let query = supabase.from('tickets').select('*')
 
       if (!isAdmin) {
-        query = query.eq('user_id', user.id)
+        query = query.eq('userId', user.id)
       }
 
-      const { data } = await query.order('created_at', { ascending: false })
+      const { data } = await query.order('createdAt', { ascending: false })
       setTickets(data || [])
     }
 
