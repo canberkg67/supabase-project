@@ -8,7 +8,7 @@ import AdminSwitch from '@/components/AdminSwitch'
 import LogoutButton from '@/components/LogoutButton'
 
 export default async function TicketsPage() {
-  const supabase = createSupabaseServerClient()
+  const supabase = await createSupabaseServerClient()
 
   const {
     data: { user },
