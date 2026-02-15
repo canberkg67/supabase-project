@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import {Button} from '@/components//ui/button'
 
-export default function TicketForm() {
+export default function TicketForm({ onTicketCreated }) {
   const [title, setTitle] = useState('')
   const [message, setMessage] = useState('')
 
@@ -30,6 +30,11 @@ export default function TicketForm() {
 
     setTitle('')
     setMessage('')
+    
+    // Notify parent to refresh ticket list
+    if (onTicketCreated) {
+      onTicketCreated()
+    }
   }
 
   return (

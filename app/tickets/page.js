@@ -36,8 +36,8 @@ export default async function TicketsPage() {
 
       {isAdmin && <AdminSwitch />}
 
-      <TicketForm />
       <TicketList isAdmin={isAdmin} />
+      <TicketForm />
     </div>
   )
 }

@@ -1,42 +1,43 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import AdminReply from './AdminReply'
 
 export default function TicketList({ isAdmin }) {
   const [tickets, setTickets] = useState([])
+  const [refreshTrigger, setRefreshTrigger] = useState(0)
 
-  useEffect(() => {
-    const load = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
+  const loadTickets = useCallback(async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
-      let query = supabase.from('Ticket').select('*')
+    let query = supabase.from('Ticket').select('*')
 
-      if (!isAdmin) {
-        if (!user) {
-          console.warn('TicketList: no user available')
-          setTickets([])
-          return
-        }
-        query = query.eq('userId', user.id)
-      }
-
-      const { data, error } = await query.order('createdAt', { ascending: false })
-      console.log('load tickets:', data, error)
-      if (error) {
-        console.error('Ticket load error:', error)
+    if (!isAdmin) {
+      if (!user) {
+        console.warn('TicketList: no user available')
         setTickets([])
         return
       }
-
-      setTickets(data || [])
+      query = query.eq('userId', user.id)
     }
 
-    load()
+    const { data, error } = await query.order('createdAt', { ascending: false })
+    console.log('load tickets:', data, error)
+    if (error) {
+      console.error('Ticket load error:', error)
+      setTickets([])
+      return
+    }
+
+    setTickets(data || [])
   }, [isAdmin])
+
+  useEffect(() => {
+    loadTickets()
+  }, [isAdmin, refreshTrigger, loadTickets])
 
   return (
     <div className="space-y-4">
