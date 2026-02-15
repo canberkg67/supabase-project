@@ -12,11 +12,21 @@ export default function TicketForm() {
       data: { user },
     } = await supabase.auth.getUser()
 
-    await supabase.from('Ticket').insert({
-      userId: user.id,
-      title,
-      message,
-    })
+    const { data: insertData, error: insertError } = await supabase
+      .from('Ticket')
+      .insert({
+        userId: user.id,
+        title,
+        message,
+      })
+
+    console.log('createTicket:', insertData, insertError)
+
+    if (insertError) {
+      console.error('Ticket insert error:', insertError)
+      alert(insertError.message)
+      return
+    }
 
     setTitle('')
     setMessage('')

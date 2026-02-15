@@ -16,10 +16,22 @@ export default function TicketList({ isAdmin }) {
       let query = supabase.from('Ticket').select('*')
 
       if (!isAdmin) {
+        if (!user) {
+          console.warn('TicketList: no user available')
+          setTickets([])
+          return
+        }
         query = query.eq('userId', user.id)
       }
 
-      const { data } = await query.order('createdAt', { ascending: false })
+      const { data, error } = await query.order('createdAt', { ascending: false })
+      console.log('load tickets:', data, error)
+      if (error) {
+        console.error('Ticket load error:', error)
+        setTickets([])
+        return
+      }
+
       setTickets(data || [])
     }
 

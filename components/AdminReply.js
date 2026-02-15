@@ -12,11 +12,26 @@ export default function AdminReply({ ticketId }) {
       data: { user },
     } = await supabase.auth.getUser()
 
-    await supabase.from('Reply').insert({
-      ticketId,
-      message: reply,
-      authorId: user?.id,
-    })
+    if (!user) {
+      alert('Kullanıcı bulunamadı. Lütfen tekrar giriş yapın.')
+      return
+    }
+
+    const { data: insertData, error: insertError } = await supabase
+      .from('Reply')
+      .insert({
+        ticketId,
+        message: reply,
+        authorId: user.id,
+      })
+
+    console.log('sendReply:', insertData, insertError)
+    if (insertError) {
+      console.error('Reply insert error:', insertError)
+      alert(insertError.message)
+      return
+    }
+
     setReply('')
   }
 
