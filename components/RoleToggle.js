@@ -36,7 +36,7 @@ export default function RoleToggle({ currentRole }) {
   return (
     <div className="bg-yellow-50 border border-yellow-200 rounded p-4">
       <p className="text-sm text-yellow-800 mb-3">
-        <strong>Portfolio Demo:</strong> Şu anda {currentRole === 'ADMIN' ? 'Admin' : 'Kullanıcı'} olarak giriş yaptınız.
+        <strong>Demo:</strong> Şu anda {currentRole === 'ADMIN' ? 'Admin' : 'Kullanıcı'} olarak giriş yaptınız.
       </p>
       <Button
         onClick={toggleRole}

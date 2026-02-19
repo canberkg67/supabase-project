@@ -94,11 +94,11 @@ export default function TicketDetailPage() {
   }
 
   if (loading) {
-    return <div className="max-w-3xl mx-auto py-10">Loading...</div>
+    return <div className="max-w-3xl mx-auto py-10">Yükleniyor...</div>
   }
 
   if (!ticket) {
-    return <div className="max-w-3xl mx-auto py-10">Ticket not found</div>
+    return <div className="max-w-3xl mx-auto py-10">Ticket bulunamadı</div>
   }
 
   return (
