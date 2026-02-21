@@ -7,6 +7,16 @@ import Link from 'next/link'
 export default function TicketList({ isAdmin }) {
   const [tickets, setTickets] = useState([])
   const [refreshTrigger, setRefreshTrigger] = useState(0)
+  const [replyCounts, setReplyCounts] = useState({})
+
+  const getStatusLabel = (status) => {
+    const labels = {
+      OPEN: 'AÇIK',
+      ANSWERED: 'CEVAPLANDI',
+      CLOSED: 'KAPATILDI',
+    }
+    return labels[status] || status
+  }
 
   const loadTickets = useCallback(async () => {
     const {
@@ -33,6 +43,21 @@ export default function TicketList({ isAdmin }) {
     }
 
     setTickets(data || [])
+
+    // Load reply counts
+    if (data && data.length > 0) {
+      const ticketIds = data.map((t) => t.id)
+      const { data: repliesData } = await supabase
+        .from('Reply')
+        .select('ticketId')
+        .in('ticketId', ticketIds)
+
+      const counts = {}
+      repliesData?.forEach((reply) => {
+        counts[reply.ticketId] = (counts[reply.ticketId] || 0) + 1
+      })
+      setReplyCounts(counts)
+    }
   }, [isAdmin])
 
   useEffect(() => {
@@ -55,9 +80,24 @@ export default function TicketList({ isAdmin }) {
                   {truncateMessage(t.message)}
                 </p>
               </div>
-              <span className={`text-xs px-2 py-1 rounded ${t.status === 'OPEN' ? 'bg-yellow-100 text-yellow-800' : t.status === 'ANSWERED' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}`}>
-                {t.status}
-              </span>
+              <div className="flex gap-2">
+                {replyCounts[t.id] > 0 && (
+                  <span className="text-xs px-2 py-1 rounded bg-green-100 text-green-800 font-semibold">
+                    CEVAP ({replyCounts[t.id]})
+                  </span>
+                )}
+                <span
+                  className={`text-xs px-2 py-1 rounded ${
+                    t.status === 'OPEN'
+                      ? 'bg-yellow-100 text-yellow-800'
+                      : t.status === 'ANSWERED'
+                        ? 'bg-blue-100 text-blue-800'
+                        : 'bg-green-100 text-green-800'
+                  }`}
+                >
+                  {getStatusLabel(t.status)}
+                </span>
+              </div>
             </div>
             <p className="text-xs text-muted-foreground mt-2">
               {new Date(t.createdAt).toLocaleDateString()}

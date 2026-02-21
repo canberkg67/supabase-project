@@ -46,10 +46,18 @@ export default function TicketDetailPage() {
 
     setTicket(ticketData)
 
-    // Cevapları fetch et
+    // Cevapları role göre fetch et
     const { data: repliesData, error: repliesError } = await supabase
       .from('Reply')
-      .select('*')
+      .select(`
+        id,
+        message,
+        createdAt,
+        authorId,
+        ticket:ticketId (
+          userId
+        )
+      `)
       .eq('ticketId', ticketId)
       .order('createdAt', { ascending: true })
 
@@ -60,8 +68,30 @@ export default function TicketDetailPage() {
       return
     }
 
-    console.log('Replies loaded:', repliesData)
-    setReplies(repliesData || [])
+    // Cevapların yazarlarının rollerini fetch et
+    if (repliesData && repliesData.length > 0) {
+      const authorIds = repliesData.map(r => r.authorId)
+      const { data: authorsData } = await supabase
+        .from('User')
+        .select('id, role')
+        .in('id', authorIds)
+
+      const authorRoleMap = {}
+      authorsData?.forEach(u => {
+        authorRoleMap[u.id] = u.role
+      })
+
+      // Cevaplara rol ekle
+      const repliesWithRole = repliesData.map(r => ({
+        ...r,
+        authorRole: authorRoleMap[r.authorId],
+      }))
+
+      console.log('Replies loaded:', repliesWithRole)
+      setReplies(repliesWithRole)
+    } else {
+      setReplies([])
+    }
     setLoading(false)
   }
 
@@ -82,6 +112,37 @@ export default function TicketDetailPage() {
 
     setReplyText('')
     loadTicketAndReplies()
+  }
+
+  const getStatusLabel = (status) => {
+    const labels = {
+      OPEN: 'AÇIK',
+      ANSWERED: 'CEVAPLANDI',
+      CLOSED: 'KAPATILDI',
+    }
+    return labels[status] || status
+  }
+
+  const getNextStatus = (currentStatus) => {
+    const statusFlow = { OPEN: 'ANSWERED', ANSWERED: 'CLOSED', CLOSED: 'OPEN' }
+    return statusFlow[currentStatus] || 'OPEN'
+  }
+
+  const changeStatus = async () => {
+    const nextStatus = getNextStatus(ticket.status)
+
+    const { error } = await supabase
+      .from('Ticket')
+      .update({ status: nextStatus })
+      .eq('id', ticketId)
+
+    if (error) {
+      console.error('Status change error:', error)
+      alert(error.message)
+      return
+    }
+
+    setTicket({ ...ticket, status: nextStatus })
   }
 
   if (loading) {
@@ -115,13 +176,20 @@ export default function TicketDetailPage() {
                   : 'bg-green-100 text-green-800'
             }`}
           >
-            {ticket.status}
+            {getStatusLabel(ticket.status)}
           </span>
         </div>
         <p className="text-gray-700 whitespace-pre-wrap mb-4">{ticket.message}</p>
-        <p className="text-sm text-muted-foreground">
-          {new Date(ticket.createdAt).toLocaleString()}
-        </p>
+        <div className="flex justify-between items-center">
+          <p className="text-sm text-muted-foreground">
+            {new Date(ticket.createdAt).toLocaleString()}
+          </p>
+          {currentUser && (
+            <Button onClick={changeStatus} size="sm" variant="outline">
+              {getStatusLabel(getNextStatus(ticket.status))} Yap
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Cevaplar Bölümü */}
@@ -133,11 +201,25 @@ export default function TicketDetailPage() {
         ) : (
           <div className="space-y-4 mb-6">
             {replies.map((reply) => (
-              <div key={reply.id} className="border rounded p-4 bg-gray-50">
+              <div
+                key={reply.id}
+                className={`border rounded p-4 ${
+                  reply.authorRole === 'ADMIN'
+                    ? 'bg-blue-50 border-blue-200'
+                    : 'bg-gray-50'
+                }`}
+              >
                 <div className="flex justify-between items-start mb-2">
-                  <p className="text-xs text-muted-foreground">
-                    {new Date(reply.createdAt).toLocaleString()}
-                  </p>
+                  <div className="flex items-center gap-2">
+                    {reply.authorRole === 'ADMIN' && (
+                      <span className="text-xs font-bold bg-blue-600 text-white px-2 py-1 rounded">
+                        ADMIN
+                      </span>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(reply.createdAt).toLocaleString()}
+                    </p>
+                  </div>
                 </div>
                 <p className="text-gray-700 whitespace-pre-wrap">{reply.message}</p>
               </div>
