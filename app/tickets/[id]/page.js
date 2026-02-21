@@ -31,7 +31,7 @@ export default function TicketDetailPage() {
   const loadTicketAndReplies = async () => {
     setLoading(true)
 
-    // Fetch ticket
+    // Ticket detaylarını fetch et
     const { data: ticketData, error: ticketError } = await supabase
       .from('Ticket')
       .select('*')
@@ -46,31 +46,22 @@ export default function TicketDetailPage() {
 
     setTicket(ticketData)
 
-    // Fetch replies with author details
+    // Cevapları fetch et
     const { data: repliesData, error: repliesError } = await supabase
       .from('Reply')
-      .select(`
-        id,
-        message,
-        createdAt,
-        authorId,
-        author:authorId (
-          id,
-          email,
-          profile (
-            id,
-            fullName,
-            avatarUrl
-          )
-        )
-      `)
+      .select('*')
       .eq('ticketId', ticketId)
       .order('createdAt', { ascending: true })
 
-    if (!repliesError) {
-      setReplies(repliesData || [])
+    if (repliesError) {
+      console.error('Failed to load replies:', repliesError)
+      setReplies([])
+      setLoading(false)
+      return
     }
 
+    console.log('Replies loaded:', repliesData)
+    setReplies(repliesData || [])
     setLoading(false)
   }
 
@@ -144,14 +135,9 @@ export default function TicketDetailPage() {
             {replies.map((reply) => (
               <div key={reply.id} className="border rounded p-4 bg-gray-50">
                 <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <p className="font-semibold">
-                      {reply.author?.profile?.fullName || reply.author?.email}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {new Date(reply.createdAt).toLocaleString()}
-                    </p>
-                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(reply.createdAt).toLocaleString()}
+                  </p>
                 </div>
                 <p className="text-gray-700 whitespace-pre-wrap">{reply.message}</p>
               </div>
