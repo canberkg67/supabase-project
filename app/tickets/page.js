@@ -35,6 +35,15 @@ export default async function TicketsPage() {
         <LogoutButton />
       </div>
 
+      {/* Banner image */}
+      <div className="mt-6 flex justify-center">
+        <img
+          src="/ticket-panel.avif"
+          alt="Ticket panel banner"
+          className="w-full max-w-2xl rounded shadow-sm"
+        />
+      </div>
+
       {/* Rol Değiştirme */}
       <RoleToggle currentRole={dbUser?.role} />
 
