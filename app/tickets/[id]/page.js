@@ -186,7 +186,7 @@ export default function TicketDetailPage() {
           </p>
           {currentUser && (
             <Button onClick={changeStatus} size="sm" variant="outline">
-              {getStatusLabel(getNextStatus(ticket.status))} Yap
+              {getStatusLabel(getNextStatus(ticket.status))}
             </Button>
           )}
         </div>
@@ -211,11 +211,15 @@ export default function TicketDetailPage() {
               >
                 <div className="flex justify-between items-start mb-2">
                   <div className="flex items-center gap-2">
-                    {reply.authorRole === 'ADMIN' && (
-                      <span className="text-xs font-bold bg-blue-600 text-white px-2 py-1 rounded">
-                        ADMIN
-                      </span>
-                    )}
+                    <span
+                      className={`text-xs font-bold px-2 py-1 rounded text-white ${
+                        reply.authorRole === 'ADMIN'
+                          ? 'bg-blue-600'
+                          : 'bg-gray-600'
+                      }`}
+                    >
+                      {reply.authorRole === 'ADMIN' ? 'ADMIN' : 'KULLANICI'}
+                    </span>
                     <p className="text-xs text-muted-foreground">
                       {new Date(reply.createdAt).toLocaleString()}
                     </p>
