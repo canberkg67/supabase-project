@@ -80,37 +80,12 @@ export default function TicketDetailPage() {
       return
     }
 
-    // Cevapların yazarlarının rollerini fetch et
+    // Use stored `authorRole` when available; default to 'USER' otherwise
     if (repliesData && repliesData.length > 0) {
-      const repliesWithoutRole = repliesData.filter(r => !r.authorRole)
-      const authorIds = [...new Set(repliesWithoutRole.map(r => r.authorId))]
-      
-      let authorRoleMap = {}
-      
-      if (authorIds.length > 0) {
-        console.log('Fetching roles for authors without stored role:', authorIds)
-        const { data: authorsData, error: authorsError } = await supabase
-          .from('User')
-          .select('id, role')
-          .in('id', authorIds)
-
-        if (authorsError) {
-          console.error('Failed to fetch author roles:', authorsError)
-        }
-
-        authorsData?.forEach(u => {
-          authorRoleMap[u.id] = u.role
-        })
-      }
-
-      // Cevaplara rol ekle - stored authorRole'ü kullan veya fallback yap
-      const repliesWithRole = repliesData.map(r => {
-        const role = r.authorRole || authorRoleMap[r.authorId] || 'USER'
-        return {
-          ...r,
-          authorRole: role,
-        }
-      })
+      const repliesWithRole = repliesData.map(r => ({
+        ...r,
+        authorRole: r.authorRole || 'USER',
+      }))
 
       console.log('Replies with roles:', repliesWithRole)
       setReplies(repliesWithRole)
@@ -259,19 +234,21 @@ export default function TicketDetailPage() {
         )}
       </div>
 
-      {/* Reply Form */}
-      <div className="border rounded p-6">
-        <h3 className="text-lg font-semibold mb-4">Cevap Yaz</h3>
-        <textarea
-          value={replyText}
-          onChange={(e) => setReplyText(e.target.value)}
-          placeholder="Cevabınızı yazın..."
-          className="w-full border rounded p-3 mb-4 min-h-32"
-        />
-        <Button onClick={sendReply} disabled={!replyText.trim()}>
-          Cevapla
-        </Button>
-      </div>
+      {/* Reply Form (hidden when ticket is CLOSED) */}
+      {ticket.status !== 'CLOSED' && (
+        <div className="border rounded p-6">
+          <h3 className="text-lg font-semibold mb-4">Cevap Yaz</h3>
+          <textarea
+            value={replyText}
+            onChange={(e) => setReplyText(e.target.value)}
+            placeholder="Cevabınızı yazın..."
+            className="w-full border rounded p-3 mb-4 min-h-32"
+          />
+          <Button onClick={sendReply} disabled={!replyText.trim()}>
+            Cevapla
+          </Button>
+        </div>
+      )}
     </div>
   )
 

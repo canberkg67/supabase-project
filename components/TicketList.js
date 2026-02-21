@@ -64,6 +64,19 @@ export default function TicketList({ isAdmin }) {
     loadTickets()
   }, [isAdmin, refreshTrigger, loadTickets])
 
+  const deleteTicket = async (e, id) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (!confirm('Bu bileti silmek istediğinize emin misiniz?')) return
+    const { error } = await supabase.from('Ticket').delete().eq('id', id)
+    if (error) {
+      console.error('Ticket delete error:', error)
+      alert('Silme hatası: ' + error.message)
+      return
+    }
+    setRefreshTrigger((s) => s + 1)
+  }
+
   const truncateMessage = (message, length = 100) => {
     return message.length > length ? message.substring(0, length) + '...' : message
   }
@@ -97,6 +110,14 @@ export default function TicketList({ isAdmin }) {
                 >
                   {getStatusLabel(t.status)}
                 </span>
+                {isAdmin && (
+                  <button
+                    onClick={(e) => deleteTicket(e, t.id)}
+                    className="text-xs px-2 py-1 rounded bg-red-600 text-white font-semibold ml-2"
+                  >
+                    SİL
+                  </button>
+                )}
               </div>
             </div>
             <p className="text-xs text-muted-foreground mt-2">
