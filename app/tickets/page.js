@@ -40,7 +40,7 @@ export default async function TicketsPage() {
         <img
           src="/ticket-panel.avif"
           alt="Ticket panel banner"
-          className="w-full max-w-2xl rounded shadow-sm"
+          className="w-full max-w-lg h-40 sm:h-56 object-cover rounded shadow-sm"
         />
       </div>
 
