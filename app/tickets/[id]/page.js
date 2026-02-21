@@ -65,6 +65,7 @@ export default function TicketDetailPage() {
         message,
         createdAt,
         authorId,
+        authorRole,
         ticket:ticketId (
           userId
         )
@@ -81,33 +82,30 @@ export default function TicketDetailPage() {
 
     // Cevapların yazarlarının rollerini fetch et
     if (repliesData && repliesData.length > 0) {
-      console.log('Fetching roles for authorIds:', repliesData.map(r => r.authorId))
-      const authorIds = [...new Set(repliesData.map(r => r.authorId))] // Unique IDs
-      console.log('Unique authorIds:', authorIds)
+      const repliesWithoutRole = repliesData.filter(r => !r.authorRole)
+      const authorIds = [...new Set(repliesWithoutRole.map(r => r.authorId))]
       
-      const { data: authorsData, error: authorsError } = await supabase
-        .from('User')
-        .select('id, role')
-        .in('id', authorIds)
+      let authorRoleMap = {}
+      
+      if (authorIds.length > 0) {
+        console.log('Fetching roles for authors without stored role:', authorIds)
+        const { data: authorsData, error: authorsError } = await supabase
+          .from('User')
+          .select('id, role')
+          .in('id', authorIds)
 
-      if (authorsError) {
-        console.error('Failed to fetch author roles:', authorsError)
+        if (authorsError) {
+          console.error('Failed to fetch author roles:', authorsError)
+        }
+
+        authorsData?.forEach(u => {
+          authorRoleMap[u.id] = u.role
+        })
       }
 
-      console.log('Authors data fetched:', authorsData)
-
-      const authorRoleMap = {}
-      authorsData?.forEach(u => {
-        authorRoleMap[u.id] = u.role
-        console.log(`Mapped ${u.id} => ${u.role}`)
-      })
-
-      console.log('Final author role map:', authorRoleMap)
-
-      // Cevaplara rol ekle
+      // Cevaplara rol ekle - stored authorRole'ü kullan veya fallback yap
       const repliesWithRole = repliesData.map(r => {
-        const role = authorRoleMap[r.authorId] || 'USER'
-        console.log(`Reply ${r.id} from ${r.authorId} has role: ${role}`)
+        const role = r.authorRole || authorRoleMap[r.authorId] || 'USER'
         return {
           ...r,
           authorRole: role,
@@ -125,10 +123,12 @@ export default function TicketDetailPage() {
   const sendReply = async () => {
     if (!replyText.trim() || !currentUser) return
 
+    // Store the author's current role at reply time
     const { error } = await supabase.from('Reply').insert({
       ticketId,
       message: replyText,
       authorId: currentUser.id,
+      authorRole: currentUserRole || 'USER',
     })
 
     if (error) {
@@ -139,13 +139,13 @@ export default function TicketDetailPage() {
 
     setReplyText('')
     loadTicketAndReplies()
-  }
+  }}
 
   const getStatusLabel = (status) => {
     const labels = {
       OPEN: 'AÇIK',
       ANSWERED: 'CEVAPLANDI',
-      CLOSED: 'KAPAT',
+      CLOSED: 'KAPATILDI',
     }
     return labels[status] || status
   }
@@ -200,7 +200,7 @@ export default function TicketDetailPage() {
                 ? 'bg-yellow-100 text-yellow-800'
                 : ticket.status === 'ANSWERED'
                   ? 'bg-blue-100 text-blue-800'
-                  : 'bg-green-100 text-green-800'
+                  : 'bg-red-100 text-red-800'
             }`}
           >
             {getStatusLabel(ticket.status)}
@@ -212,7 +212,7 @@ export default function TicketDetailPage() {
             {new Date(ticket.createdAt).toLocaleString()}
           </p>
           {currentUser && currentUserRole === 'ADMIN' && (
-            <Button onClick={changeStatus} size="sm" className="bg-red-600 hover:bg-red-700 text-white">
+            <Button onClick={changeStatus} size="sm" className="bg-gray-600 hover:bg-gray-700 text-white">
               {getStatusLabel(getNextStatus(ticket.status))}
             </Button>
           )}
@@ -274,4 +274,4 @@ export default function TicketDetailPage() {
       </div>
     </div>
   )
-}
+

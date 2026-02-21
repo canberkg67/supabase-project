@@ -57,6 +57,7 @@ model Reply {
   ticket   Ticket   @relation(fields: [ticketId], references: [id])
   authorId String
   author   User     @relation(fields: [authorId], references: [id])
+  authorRole Role    @default(USER)
   createdAt DateTime @default(now())
 }
 
