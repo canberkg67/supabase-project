@@ -139,7 +139,7 @@ export default function TicketDetailPage() {
 
     setReplyText('')
     loadTicketAndReplies()
-  }}
+  }
 
   const getStatusLabel = (status) => {
     const labels = {
@@ -274,4 +274,6 @@ export default function TicketDetailPage() {
       </div>
     </div>
   )
+
+  }
 
