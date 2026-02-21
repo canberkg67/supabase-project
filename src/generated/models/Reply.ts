@@ -30,6 +30,7 @@ export type ReplyMinAggregateOutputType = {
   ticketId: string | null
   authorId: string | null
   createdAt: Date | null
+  authorRole: string | null
 }
 
 export type ReplyMaxAggregateOutputType = {
@@ -38,6 +39,7 @@ export type ReplyMaxAggregateOutputType = {
   ticketId: string | null
   authorId: string | null
   createdAt: Date | null
+  authorRole: string | null
 }
 
 export type ReplyCountAggregateOutputType = {
@@ -46,6 +48,7 @@ export type ReplyCountAggregateOutputType = {
   ticketId: number
   authorId: number
   createdAt: number
+  authorRole: number
   _all: number
 }
 
@@ -56,6 +59,7 @@ export type ReplyMinAggregateInputType = {
   ticketId?: true
   authorId?: true
   createdAt?: true
+  authorRole?: true
 }
 
 export type ReplyMaxAggregateInputType = {
@@ -64,6 +68,7 @@ export type ReplyMaxAggregateInputType = {
   ticketId?: true
   authorId?: true
   createdAt?: true
+  authorRole?: true
 }
 
 export type ReplyCountAggregateInputType = {
@@ -72,6 +77,7 @@ export type ReplyCountAggregateInputType = {
   ticketId?: true
   authorId?: true
   createdAt?: true
+  authorRole?: true
   _all?: true
 }
 
@@ -153,6 +159,7 @@ export type ReplyGroupByOutputType = {
   ticketId: string
   authorId: string
   createdAt: Date
+  authorRole: string
   _count: ReplyCountAggregateOutputType | null
   _min: ReplyMinAggregateOutputType | null
   _max: ReplyMaxAggregateOutputType | null
@@ -182,8 +189,9 @@ export type ReplyWhereInput = {
   ticketId?: Prisma.StringFilter<"Reply"> | string
   authorId?: Prisma.StringFilter<"Reply"> | string
   createdAt?: Prisma.DateTimeFilter<"Reply"> | Date | string
-  ticket?: Prisma.XOR<Prisma.TicketScalarRelationFilter, Prisma.TicketWhereInput>
+  authorRole?: Prisma.StringFilter<"Reply"> | string
   author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  ticket?: Prisma.XOR<Prisma.TicketScalarRelationFilter, Prisma.TicketWhereInput>
 }
 
 export type ReplyOrderByWithRelationInput = {
@@ -192,8 +200,9 @@ export type ReplyOrderByWithRelationInput = {
   ticketId?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  ticket?: Prisma.TicketOrderByWithRelationInput
+  authorRole?: Prisma.SortOrder
   author?: Prisma.UserOrderByWithRelationInput
+  ticket?: Prisma.TicketOrderByWithRelationInput
 }
 
 export type ReplyWhereUniqueInput = Prisma.AtLeast<{
@@ -205,8 +214,9 @@ export type ReplyWhereUniqueInput = Prisma.AtLeast<{
   ticketId?: Prisma.StringFilter<"Reply"> | string
   authorId?: Prisma.StringFilter<"Reply"> | string
   createdAt?: Prisma.DateTimeFilter<"Reply"> | Date | string
-  ticket?: Prisma.XOR<Prisma.TicketScalarRelationFilter, Prisma.TicketWhereInput>
+  authorRole?: Prisma.StringFilter<"Reply"> | string
   author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  ticket?: Prisma.XOR<Prisma.TicketScalarRelationFilter, Prisma.TicketWhereInput>
 }, "id">
 
 export type ReplyOrderByWithAggregationInput = {
@@ -215,6 +225,7 @@ export type ReplyOrderByWithAggregationInput = {
   ticketId?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  authorRole?: Prisma.SortOrder
   _count?: Prisma.ReplyCountOrderByAggregateInput
   _max?: Prisma.ReplyMaxOrderByAggregateInput
   _min?: Prisma.ReplyMinOrderByAggregateInput
@@ -229,14 +240,16 @@ export type ReplyScalarWhereWithAggregatesInput = {
   ticketId?: Prisma.StringWithAggregatesFilter<"Reply"> | string
   authorId?: Prisma.StringWithAggregatesFilter<"Reply"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Reply"> | Date | string
+  authorRole?: Prisma.StringWithAggregatesFilter<"Reply"> | string
 }
 
 export type ReplyCreateInput = {
   id?: string
   message: string
   createdAt?: Date | string
-  ticket: Prisma.TicketCreateNestedOneWithoutRepliesInput
+  authorRole?: string
   author: Prisma.UserCreateNestedOneWithoutRepliesInput
+  ticket: Prisma.TicketCreateNestedOneWithoutRepliesInput
 }
 
 export type ReplyUncheckedCreateInput = {
@@ -245,14 +258,16 @@ export type ReplyUncheckedCreateInput = {
   ticketId: string
   authorId: string
   createdAt?: Date | string
+  authorRole?: string
 }
 
 export type ReplyUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ticket?: Prisma.TicketUpdateOneRequiredWithoutRepliesNestedInput
+  authorRole?: Prisma.StringFieldUpdateOperationsInput | string
   author?: Prisma.UserUpdateOneRequiredWithoutRepliesNestedInput
+  ticket?: Prisma.TicketUpdateOneRequiredWithoutRepliesNestedInput
 }
 
 export type ReplyUncheckedUpdateInput = {
@@ -261,6 +276,7 @@ export type ReplyUncheckedUpdateInput = {
   ticketId?: Prisma.StringFieldUpdateOperationsInput | string
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  authorRole?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ReplyCreateManyInput = {
@@ -269,12 +285,14 @@ export type ReplyCreateManyInput = {
   ticketId: string
   authorId: string
   createdAt?: Date | string
+  authorRole?: string
 }
 
 export type ReplyUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  authorRole?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ReplyUncheckedUpdateManyInput = {
@@ -283,6 +301,7 @@ export type ReplyUncheckedUpdateManyInput = {
   ticketId?: Prisma.StringFieldUpdateOperationsInput | string
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  authorRole?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ReplyListRelationFilter = {
@@ -301,6 +320,7 @@ export type ReplyCountOrderByAggregateInput = {
   ticketId?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  authorRole?: Prisma.SortOrder
 }
 
 export type ReplyMaxOrderByAggregateInput = {
@@ -309,6 +329,7 @@ export type ReplyMaxOrderByAggregateInput = {
   ticketId?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  authorRole?: Prisma.SortOrder
 }
 
 export type ReplyMinOrderByAggregateInput = {
@@ -317,6 +338,7 @@ export type ReplyMinOrderByAggregateInput = {
   ticketId?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  authorRole?: Prisma.SortOrder
 }
 
 export type ReplyCreateNestedManyWithoutAuthorInput = {
@@ -407,6 +429,7 @@ export type ReplyCreateWithoutAuthorInput = {
   id?: string
   message: string
   createdAt?: Date | string
+  authorRole?: string
   ticket: Prisma.TicketCreateNestedOneWithoutRepliesInput
 }
 
@@ -415,6 +438,7 @@ export type ReplyUncheckedCreateWithoutAuthorInput = {
   message: string
   ticketId: string
   createdAt?: Date | string
+  authorRole?: string
 }
 
 export type ReplyCreateOrConnectWithoutAuthorInput = {
@@ -452,12 +476,14 @@ export type ReplyScalarWhereInput = {
   ticketId?: Prisma.StringFilter<"Reply"> | string
   authorId?: Prisma.StringFilter<"Reply"> | string
   createdAt?: Prisma.DateTimeFilter<"Reply"> | Date | string
+  authorRole?: Prisma.StringFilter<"Reply"> | string
 }
 
 export type ReplyCreateWithoutTicketInput = {
   id?: string
   message: string
   createdAt?: Date | string
+  authorRole?: string
   author: Prisma.UserCreateNestedOneWithoutRepliesInput
 }
 
@@ -466,6 +492,7 @@ export type ReplyUncheckedCreateWithoutTicketInput = {
   message: string
   authorId: string
   createdAt?: Date | string
+  authorRole?: string
 }
 
 export type ReplyCreateOrConnectWithoutTicketInput = {
@@ -499,12 +526,14 @@ export type ReplyCreateManyAuthorInput = {
   message: string
   ticketId: string
   createdAt?: Date | string
+  authorRole?: string
 }
 
 export type ReplyUpdateWithoutAuthorInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  authorRole?: Prisma.StringFieldUpdateOperationsInput | string
   ticket?: Prisma.TicketUpdateOneRequiredWithoutRepliesNestedInput
 }
 
@@ -513,6 +542,7 @@ export type ReplyUncheckedUpdateWithoutAuthorInput = {
   message?: Prisma.StringFieldUpdateOperationsInput | string
   ticketId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  authorRole?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ReplyUncheckedUpdateManyWithoutAuthorInput = {
@@ -520,6 +550,7 @@ export type ReplyUncheckedUpdateManyWithoutAuthorInput = {
   message?: Prisma.StringFieldUpdateOperationsInput | string
   ticketId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  authorRole?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ReplyCreateManyTicketInput = {
@@ -527,12 +558,14 @@ export type ReplyCreateManyTicketInput = {
   message: string
   authorId: string
   createdAt?: Date | string
+  authorRole?: string
 }
 
 export type ReplyUpdateWithoutTicketInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  authorRole?: Prisma.StringFieldUpdateOperationsInput | string
   author?: Prisma.UserUpdateOneRequiredWithoutRepliesNestedInput
 }
 
@@ -541,6 +574,7 @@ export type ReplyUncheckedUpdateWithoutTicketInput = {
   message?: Prisma.StringFieldUpdateOperationsInput | string
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  authorRole?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ReplyUncheckedUpdateManyWithoutTicketInput = {
@@ -548,6 +582,7 @@ export type ReplyUncheckedUpdateManyWithoutTicketInput = {
   message?: Prisma.StringFieldUpdateOperationsInput | string
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  authorRole?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 
@@ -558,8 +593,9 @@ export type ReplySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   ticketId?: boolean
   authorId?: boolean
   createdAt?: boolean
-  ticket?: boolean | Prisma.TicketDefaultArgs<ExtArgs>
+  authorRole?: boolean
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  ticket?: boolean | Prisma.TicketDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["reply"]>
 
 export type ReplySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -568,8 +604,9 @@ export type ReplySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   ticketId?: boolean
   authorId?: boolean
   createdAt?: boolean
-  ticket?: boolean | Prisma.TicketDefaultArgs<ExtArgs>
+  authorRole?: boolean
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  ticket?: boolean | Prisma.TicketDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["reply"]>
 
 export type ReplySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -578,8 +615,9 @@ export type ReplySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   ticketId?: boolean
   authorId?: boolean
   createdAt?: boolean
-  ticket?: boolean | Prisma.TicketDefaultArgs<ExtArgs>
+  authorRole?: boolean
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  ticket?: boolean | Prisma.TicketDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["reply"]>
 
 export type ReplySelectScalar = {
@@ -588,27 +626,28 @@ export type ReplySelectScalar = {
   ticketId?: boolean
   authorId?: boolean
   createdAt?: boolean
+  authorRole?: boolean
 }
 
-export type ReplyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "message" | "ticketId" | "authorId" | "createdAt", ExtArgs["result"]["reply"]>
+export type ReplyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "message" | "ticketId" | "authorId" | "createdAt" | "authorRole", ExtArgs["result"]["reply"]>
 export type ReplyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  ticket?: boolean | Prisma.TicketDefaultArgs<ExtArgs>
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  ticket?: boolean | Prisma.TicketDefaultArgs<ExtArgs>
 }
 export type ReplyIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  ticket?: boolean | Prisma.TicketDefaultArgs<ExtArgs>
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  ticket?: boolean | Prisma.TicketDefaultArgs<ExtArgs>
 }
 export type ReplyIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  ticket?: boolean | Prisma.TicketDefaultArgs<ExtArgs>
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  ticket?: boolean | Prisma.TicketDefaultArgs<ExtArgs>
 }
 
 export type $ReplyPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Reply"
   objects: {
-    ticket: Prisma.$TicketPayload<ExtArgs>
     author: Prisma.$UserPayload<ExtArgs>
+    ticket: Prisma.$TicketPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -616,6 +655,7 @@ export type $ReplyPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     ticketId: string
     authorId: string
     createdAt: Date
+    authorRole: string
   }, ExtArgs["result"]["reply"]>
   composites: {}
 }
@@ -1010,8 +1050,8 @@ readonly fields: ReplyFieldRefs;
  */
 export interface Prisma__ReplyClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  ticket<T extends Prisma.TicketDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TicketDefaultArgs<ExtArgs>>): Prisma.Prisma__TicketClient<runtime.Types.Result.GetResult<Prisma.$TicketPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   author<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  ticket<T extends Prisma.TicketDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TicketDefaultArgs<ExtArgs>>): Prisma.Prisma__TicketClient<runtime.Types.Result.GetResult<Prisma.$TicketPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1046,6 +1086,7 @@ export interface ReplyFieldRefs {
   readonly ticketId: Prisma.FieldRef<"Reply", 'String'>
   readonly authorId: Prisma.FieldRef<"Reply", 'String'>
   readonly createdAt: Prisma.FieldRef<"Reply", 'DateTime'>
+  readonly authorRole: Prisma.FieldRef<"Reply", 'String'>
 }
     
 

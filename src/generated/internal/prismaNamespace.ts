@@ -781,7 +781,8 @@ export const ReplyScalarFieldEnum = {
   message: 'message',
   ticketId: 'ticketId',
   authorId: 'authorId',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  authorRole: 'authorRole'
 } as const
 
 export type ReplyScalarFieldEnum = (typeof ReplyScalarFieldEnum)[keyof typeof ReplyScalarFieldEnum]
