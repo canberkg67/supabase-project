@@ -13,6 +13,7 @@ export default function TicketDetailPage() {
   const [ticket, setTicket] = useState(null)
   const [replies, setReplies] = useState([])
   const [currentUser, setCurrentUser] = useState(null)
+  const [currentUserRole, setCurrentUserRole] = useState(null)
   const [replyText, setReplyText] = useState('')
   const [loading, setLoading] = useState(true)
 
@@ -26,6 +27,16 @@ export default function TicketDetailPage() {
       data: { user },
     } = await supabase.auth.getUser()
     setCurrentUser(user)
+
+    // Fetch current user's role from database
+    if (user) {
+      const { data: userData } = await supabase
+        .from('User')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+      setCurrentUserRole(userData?.role)
+    }
   }
 
   const loadTicketAndReplies = async () => {
@@ -70,22 +81,31 @@ export default function TicketDetailPage() {
 
     // Cevapların yazarlarının rollerini fetch et
     if (repliesData && repliesData.length > 0) {
-      const authorIds = repliesData.map(r => r.authorId)
-      const { data: authorsData } = await supabase
+      const authorIds = [...new Set(repliesData.map(r => r.authorId))] // Unique IDs
+      const { data: authorsData, error: authorsError } = await supabase
         .from('User')
         .select('id, role')
         .in('id', authorIds)
+
+      if (authorsError) {
+        console.error('Failed to fetch author roles:', authorsError)
+      }
 
       const authorRoleMap = {}
       authorsData?.forEach(u => {
         authorRoleMap[u.id] = u.role
       })
 
+      console.log('Author role map:', authorRoleMap)
+
       // Cevaplara rol ekle
-      const repliesWithRole = repliesData.map(r => ({
-        ...r,
-        authorRole: authorRoleMap[r.authorId],
-      }))
+      const repliesWithRole = repliesData.map(r => {
+        const role = authorRoleMap[r.authorId] || 'USER'
+        return {
+          ...r,
+          authorRole: role,
+        }
+      })
 
       console.log('Replies loaded:', repliesWithRole)
       setReplies(repliesWithRole)
@@ -184,7 +204,7 @@ export default function TicketDetailPage() {
           <p className="text-sm text-muted-foreground">
             {new Date(ticket.createdAt).toLocaleString()}
           </p>
-          {currentUser && (
+          {currentUser && currentUserRole === 'ADMIN' && (
             <Button onClick={changeStatus} size="sm" variant="outline">
               {getStatusLabel(getNextStatus(ticket.status))}
             </Button>
