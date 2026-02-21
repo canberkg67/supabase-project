@@ -64,10 +64,28 @@ export default function TicketList({ isAdmin }) {
     loadTickets()
   }, [isAdmin, refreshTrigger, loadTickets])
 
+  // Refresh when a new ticket is created elsewhere in the app
+  useEffect(() => {
+    const handler = () => setRefreshTrigger((s) => s + 1)
+    if (typeof window !== 'undefined') window.addEventListener('ticketCreated', handler)
+    return () => {
+      if (typeof window !== 'undefined') window.removeEventListener('ticketCreated', handler)
+    }
+  }, [])
+
   const deleteTicket = async (e, id) => {
     e.preventDefault()
     e.stopPropagation()
     if (!confirm('Silmek istediğinize emin misiniz?')) return
+
+    // Delete replies first to avoid FK constraint errors
+    const { error: replyError } = await supabase.from('Reply').delete().eq('ticketId', id)
+    if (replyError) {
+      console.error('Reply delete error:', replyError)
+      alert('Silme hatası: ' + replyError.message)
+      return
+    }
+
     const { error } = await supabase.from('Ticket').delete().eq('id', id)
     if (error) {
       console.error('Ticket delete error:', error)

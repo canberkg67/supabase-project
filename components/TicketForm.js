@@ -35,6 +35,10 @@ export default function TicketForm({ onTicketCreated }) {
     if (onTicketCreated) {
       onTicketCreated()
     }
+    // Emit a global event so TicketList (which may be in a different client scope) can refresh
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('ticketCreated'))
+    }
   }
 
   return (
