@@ -81,7 +81,10 @@ export default function TicketDetailPage() {
 
     // Cevapların yazarlarının rollerini fetch et
     if (repliesData && repliesData.length > 0) {
+      console.log('Fetching roles for authorIds:', repliesData.map(r => r.authorId))
       const authorIds = [...new Set(repliesData.map(r => r.authorId))] // Unique IDs
+      console.log('Unique authorIds:', authorIds)
+      
       const { data: authorsData, error: authorsError } = await supabase
         .from('User')
         .select('id, role')
@@ -91,23 +94,27 @@ export default function TicketDetailPage() {
         console.error('Failed to fetch author roles:', authorsError)
       }
 
+      console.log('Authors data fetched:', authorsData)
+
       const authorRoleMap = {}
       authorsData?.forEach(u => {
         authorRoleMap[u.id] = u.role
+        console.log(`Mapped ${u.id} => ${u.role}`)
       })
 
-      console.log('Author role map:', authorRoleMap)
+      console.log('Final author role map:', authorRoleMap)
 
       // Cevaplara rol ekle
       const repliesWithRole = repliesData.map(r => {
         const role = authorRoleMap[r.authorId] || 'USER'
+        console.log(`Reply ${r.id} from ${r.authorId} has role: ${role}`)
         return {
           ...r,
           authorRole: role,
         }
       })
 
-      console.log('Replies loaded:', repliesWithRole)
+      console.log('Replies with roles:', repliesWithRole)
       setReplies(repliesWithRole)
     } else {
       setReplies([])
@@ -138,7 +145,7 @@ export default function TicketDetailPage() {
     const labels = {
       OPEN: 'AÇIK',
       ANSWERED: 'CEVAPLANDI',
-      CLOSED: 'KAPATILDI',
+      CLOSED: 'KAPAT',
     }
     return labels[status] || status
   }
@@ -205,7 +212,7 @@ export default function TicketDetailPage() {
             {new Date(ticket.createdAt).toLocaleString()}
           </p>
           {currentUser && currentUserRole === 'ADMIN' && (
-            <Button onClick={changeStatus} size="sm" variant="outline">
+            <Button onClick={changeStatus} size="sm" className="bg-red-600 hover:bg-red-700 text-white">
               {getStatusLabel(getNextStatus(ticket.status))}
             </Button>
           )}
