@@ -67,7 +67,7 @@ export default function TicketList({ isAdmin }) {
   const deleteTicket = async (e, id) => {
     e.preventDefault()
     e.stopPropagation()
-    if (!confirm('Bu bileti silmek istediğinize emin misiniz?')) return
+    if (!confirm('Silmek istediğinize emin misiniz?')) return
     const { error } = await supabase.from('Ticket').delete().eq('id', id)
     if (error) {
       console.error('Ticket delete error:', error)

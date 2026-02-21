@@ -120,7 +120,7 @@ export default function TicketDetailPage() {
     const labels = {
       OPEN: 'AÇIK',
       ANSWERED: 'CEVAPLANDI',
-      CLOSED: 'KAPATILDI',
+      CLOSED: 'KAPALI',
     }
     return labels[status] || status
   }
@@ -145,6 +145,15 @@ export default function TicketDetailPage() {
     }
 
     setTicket({ ...ticket, status: nextStatus })
+  }
+
+  const getActionLabel = (status) => {
+    const map = {
+      OPEN: 'AÇ',
+      ANSWERED: 'CEVAPLANDI',
+      CLOSED: 'KAPA',
+    }
+    return map[status] || status
   }
 
   if (loading) {
@@ -188,7 +197,7 @@ export default function TicketDetailPage() {
           </p>
           {currentUser && currentUserRole === 'ADMIN' && (
             <Button onClick={changeStatus} size="sm" className="bg-gray-600 hover:bg-gray-700 text-white">
-              {getStatusLabel(getNextStatus(ticket.status))}
+              {getActionLabel(getNextStatus(ticket.status))}
             </Button>
           )}
         </div>
@@ -203,25 +212,9 @@ export default function TicketDetailPage() {
         ) : (
           <div className="space-y-4 mb-6">
             {replies.map((reply) => (
-              <div
-                key={reply.id}
-                className={`border rounded p-4 ${
-                  reply.authorRole === 'ADMIN'
-                    ? 'bg-blue-50 border-blue-200'
-                    : 'bg-gray-50'
-                }`}
-              >
+              <div key={reply.id} className="border rounded p-4 bg-gray-50">
                 <div className="flex justify-between items-start mb-2">
                   <div className="flex items-center gap-2">
-                    <span
-                      className={`text-xs font-bold px-2 py-1 rounded text-white ${
-                        reply.authorRole === 'ADMIN'
-                          ? 'bg-blue-600'
-                          : 'bg-gray-600'
-                      }`}
-                    >
-                      {reply.authorRole === 'ADMIN' ? 'ADMIN' : 'KULLANICI'}
-                    </span>
                     <p className="text-xs text-muted-foreground">
                       {new Date(reply.createdAt).toLocaleString()}
                     </p>
