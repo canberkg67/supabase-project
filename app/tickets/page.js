@@ -4,7 +4,6 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 
 import TicketForm from '@/components/TicketForm'
 import TicketList from '@/components/TicketList'
-import AdminSwitch from '@/components/AdminSwitch'
 import LogoutButton from '@/components/LogoutButton'
 import RoleToggle from '@/components/RoleToggle'
 
@@ -38,8 +37,6 @@ export default async function TicketsPage() {
 
       {/* Rol Değiştirme */}
       <RoleToggle currentRole={dbUser?.role} />
-
-      {isAdmin && <AdminSwitch />}
 
       {/* ADMIN SAYFASI */}
       {isAdmin ? (

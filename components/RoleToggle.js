@@ -24,8 +24,8 @@ export default function RoleToggle({ currentRole }) {
       const { newRole } = await res.json()
       console.log('Role toggled to:', newRole)
       
-      // Refresh page to show new role view
-      router.refresh()
+      // Sayfaya baştan reset atarak yeni role göre içerik yüklenmesini sağlıyoruz
+      window.location.reload()
     } catch (error) {
       console.error('Toggle error:', error)
       alert('Error toggling role')
